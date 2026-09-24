@@ -1,5 +1,8 @@
 # Task Manager API
 
+> The complete Student Portfolio and Practicals 1-8 documentation is in the
+> [root README](../README.md). This file documents the backend API only.
+
 ## Run it
 
 From this directory:
