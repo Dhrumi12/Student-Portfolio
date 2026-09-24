@@ -272,6 +272,19 @@
   color: #4b5563;
 }
 
+.dark-mode .task-card,
+.dark-mode .task-card h3 {
+  color: #111827;
+}
+
+.dark-mode .task-card p {
+  color: #4b5563;
+}
+
+.dark-mode .task-card .task-status {
+  color: #6b7280;
+}
+
 .task-status {
   display: block;
   margin-top: 8px;
