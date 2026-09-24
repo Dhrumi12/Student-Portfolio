@@ -178,3 +178,39 @@ npm run dev
 ```
 
 The Contact page sends `name`, `email`, and `message` to `POST /contacts` through the Vite `/api` proxy. Successful submissions appear in MongoDB Compass under `task_management > contacts`.
+
+## Practical 6: Full-Stack Integration Details
+
+The frontend and backend run as two connected applications:
+
+- React runs on `http://localhost:5173`.
+- Express runs on `http://localhost:5001`.
+- CORS allows the frontend to call the API.
+- `src/api.js` centralizes task, authentication, and user requests.
+- Task create, read, update, complete, and delete operations use MongoDB.
+- The UI includes optimistic creation, loading states, error states, retry,
+  delete confirmation, and toast feedback.
+
+## Practical 7: Authentication Details
+
+- `/register` validates credentials and hashes passwords with bcrypt.
+- `/login` verifies the password and returns a JWT with a one-hour expiry.
+- `/me` returns the authenticated user's details.
+- All task endpoints require `Authorization: Bearer <token>`.
+- Logout removes the token and stored user from browser storage.
+- Expired or invalid protected requests redirect the user to login.
+
+## Practical 8: Lazy Loading Details
+
+The Projects and Contact route components are loaded only when their routes are
+visited:
+
+```jsx
+const Projects = lazy(() => import('./components/Projects.jsx'))
+const Contact = lazy(() => import('./components/Contact.jsx'))
+```
+
+The routes are wrapped with `Suspense` and display `Loading page...` while a
+lazy chunk loads. The optimized Vite build produces separate `Projects` and
+`Contact` JavaScript files. The complete before/after measurements and
+Slow 3G testing steps are documented in [docs/performance.md](docs/performance.md).
