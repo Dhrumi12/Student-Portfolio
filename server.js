@@ -1,0 +1,124 @@
+import dotenv from 'dotenv'
+import { fileURLToPath } from 'node:url'
+import express from 'express'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import Task from './models/Task.js'
+
+dotenv.config({ path: 'task-manager-api/.env' })
+dotenv.config()
+
+const app = express()
+const port = process.env.PORT || 5001
+
+app.use(express.json())
+app.use(cors())
+
+app.get('/tasks', async (req, res, next) => {
+  try {
+    const tasks = await Task.find().sort({ createdAt: -1 })
+    res.json(tasks)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.get('/tasks/:id', async (req, res, next) => {
+  try {
+    const task = await Task.findById(req.params.id)
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' })
+    }
+
+    res.json(task)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.post('/tasks', async (req, res, next) => {
+  try {
+    const task = await Task.create(req.body)
+    res.status(201).json(task)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.put('/tasks/:id', async (req, res, next) => {
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    })
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' })
+    }
+
+    res.json(task)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.delete('/tasks/:id', async (req, res, next) => {
+  try {
+    const task = await Task.findByIdAndDelete(req.params.id)
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' })
+    }
+
+    res.json({ message: 'Task deleted successfully' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' })
+})
+
+app.use((error, req, res, _next) => {
+  if (error.name === 'ValidationError') {
+    const details = Object.fromEntries(
+      Object.entries(error.errors).map(([field, fieldError]) => [field, fieldError.message]),
+    )
+
+    return res.status(400).json({
+      error: 'Validation failed',
+      details,
+    })
+  }
+
+  if (error.name === 'CastError') {
+    return res.status(400).json({ error: 'Invalid task ID' })
+  }
+
+  console.error(error)
+  res.status(500).json({ error: 'Internal server error' })
+})
+
+export async function startServer() {
+  if (!process.env.MONGO_URI) {
+    throw new Error('MONGO_URI is not configured. Copy .env.example to .env and set it.')
+  }
+
+  await mongoose.connect(process.env.MONGO_URI)
+  console.log('MongoDB connected')
+
+  return app.listen(port, () => {
+    console.log(`Task API listening on http://localhost:${port}`)
+  })
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  startServer().catch((error) => {
+    console.error('Unable to start server:', error.message)
+    process.exit(1)
+  })
+}
+
+export default app
