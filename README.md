@@ -1,20 +1,96 @@
 # Student Portfolio
 
-This portfolio app has been extended with React Router, state management, and a MongoDB-backed task manager.
+This repository contains the completed Student Portfolio and full-stack Task
+Management application for Practicals 1-8. It combines a Vite React frontend,
+an Express REST API, MongoDB persistence, JWT authentication, and route-level
+performance optimization.
 
 ## Features
 
 - Multi-page navigation using React Router
+- Reusable Header, About, Skills, Footer, and project components
+- Props-driven skills and three-project portfolio showcase
+- Dark/light mode toggle
 - Contact form with controlled input and live character count
 - Task page connected to the local Express and MongoDB API
 - Create, read, update, complete, and delete task operations
-- Loading, error, confirmation, and toast feedback states
+- Loading, empty, error, retry, confirmation, optimistic update, and toast states
+- User registration, bcrypt password hashing, JWT login, logout, and protected task routes
+- Express request logging, JSON content-type validation, structured errors, and 404 handling
+- Personal GitHub profile link in the portfolio footer: https://github.com/Dhrumi12
+
+## Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Portfolio home, skills, and project showcase |
+| `/projects` | Authenticated MongoDB task manager |
+| `/contact` | Controlled contact form saved through the API |
+| `/login` | JWT user login |
+| `/register` | New user registration |
+| Any other path | Custom 404 page |
+
+## Practical completion
+
+### Practical 1: React and component architecture
+
+The app uses independently structured functional components. `Home` passes
+props for the name, theme color, biography, skills, email, and project list.
+The project showcase renders three projects dynamically from props.
+
+### Practical 2: State management and routing
+
+React Router provides client-side navigation without full page reloads. The
+Contact page uses controlled form state, a live preview, character count, and
+help visibility toggle. The navigation includes a dark/light mode state toggle
+and the app includes a custom 404 route.
+
+### Practical 3: API integration and data rendering
+
+The Projects page uses `useEffect` and centralized functions in `src/api.js`
+to load task data. It handles loading, empty, error, retry, create, update,
+complete, and delete states.
+
+### Practical 4: REST API with Express
+
+The backend provides CRUD task endpoints, a global request logger, JSON
+content-type validation for write requests, structured 404 responses, and a
+final error handler.
+
+### Practical 5: MongoDB and Mongoose
+
+Mongoose models persist users, tasks, and contact messages. Task schemas
+validate required titles, completion defaults, timestamps, and low/medium/high
+priority values. Validation errors are returned as structured JSON.
+
+### Practical 6: Full-stack integration
+
+The React frontend communicates with the Express API using fetch and CORS.
+Task changes persist in MongoDB and the UI provides optimistic creation,
+delete confirmation, success notifications, and failure feedback.
+
+### Practical 7: Authentication and middleware
+
+Registration hashes passwords with bcrypt. Login returns a one-hour JWT, and
+the task endpoints require a valid Bearer token. Expired protected requests
+clear local credentials and redirect to the login page.
 
 ## Practical 8: Performance Optimization
 
 Projects and Contact use route-based `React.lazy()` imports with a Suspense
 fallback. The build comparison, chunk sizes, DevTools measurement procedure,
 and analysis are documented in [docs/performance.md](docs/performance.md).
+
+Measured production build comparison:
+
+| Build | Initial JavaScript | Gzip | Route chunks |
+| --- | ---: | ---: | --- |
+| Before code splitting | 244.08 kB | 77.27 kB | None |
+| After code splitting | 238.28 kB | 75.94 kB | Projects and Contact |
+
+The optimized build creates separate lazy chunks for the Projects and Contact
+routes. Full evidence and the DevTools measurement procedure are in
+[docs/performance.md](docs/performance.md).
 
 ## Practicals 1-8 evidence
 
